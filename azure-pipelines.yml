@@ -1,13 +1,46 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: windows-2019
+
+
 steps:
-- task: SSTS.ssts-ci-extension.opkey-custom-build-task.OpKeyTestSuite@0
-  displayName: 'OpKey SaaS Build'
+- script: echo Hello, Welcome to OpKey's Instant Remote Execution via Spock Agent!
+  displayName: 'Script Starts here'
+
+- task: JavaToolInstaller@0
+  displayName: 'Change default Java to JDK version 8'
   inputs:
-    opkeySaaSEndPoint: 'Prod for yaml'
-    opkeyProject: 'project 5.70(s)'
-    opkeySuitePath: 'Project Workspace\sanity\TC Suite'
-    opkeyBuilds: opkey12
-    opkeyAgent: '[Online]-Ashutosh2'
-    opkeyAgentPlugin: Web
-    opkeySnapFreq: AllSteps
-    opkeySnapQual: High
-    opkeyReportType: DontSend
+    versionSpec: '8'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
+- script: 'java -version'
+  displayName: 'Find out Java Version'
+
+- script: echo $(JAVA_HOME)
+  displayName: Display Java Home
+
+- task: CmdLine@2
+  inputs:
+    script: 'dir'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build the DotNet Core project from the Source Code'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    workingDirectory: 'InstantSpockExecutionRunner'
+    
+- task: CmdLine@2
+  displayName: 'Execute Instant Spock Run'
+  inputs:
+    script: 'InstantSpockExecutionRunner.exe "--environmentType=$(environmentType)" "--opkeyBaseUrl=$(opKeyBaseUrl)" "--sessionName=$(sessionName)" "--defaultPlugin=$(defaultPlugin)" "--build=$(build)" "--suitepath=$(suitePath)" "--browser=$(browser)" "--username=$(username)" "--apikey=$(apiKey)" "--project=$(project)"'
+    workingDirectory: '.\InstantSpockExecutionRunner\InstantSpockExecutionRunner\bin\Debug\netcoreapp3.1'
+    
