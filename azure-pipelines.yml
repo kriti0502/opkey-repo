@@ -1,0 +1,13 @@
+steps:
+- task: SSTS.ssts-ci-extension.opkey-custom-build-task.OpKeyTestSuite@0
+  displayName: 'OpKey SaaS Build'
+  inputs:
+    opkeySaaSEndPoint: 'Prod for yaml'
+    opkeyProject: 'project 5.70(s)'
+    opkeySuitePath: 'Project Workspace\sanity\TC Suite'
+    opkeyBuilds: opkey12
+    opkeyAgent: '[Online]-Ashutosh2'
+    opkeyAgentPlugin: Web
+    opkeySnapFreq: AllSteps
+    opkeySnapQual: High
+    opkeyReportType: DontSend
